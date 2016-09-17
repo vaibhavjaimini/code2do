@@ -1,0 +1,81 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>code2do</title>
+<meta charset="UTF-8">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<script>
+var csrf = '{{csrf_token}}';
+function register(){
+	var email = document.getElementsByName("email")[0].value;
+	var first_name = document.getElementsByName("first_name")[0].value;
+	var last_name = document.getElementsByName("last_name")[0].value;
+	var password = document.getElementsByName("password")[0].value;
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function(){
+		if(this.readyState == 4 && this.status == 200){
+			var response = xmlhttp.response;
+			if(response == "1"){
+				
+			}
+		}
+	}
+	xmlhttp.open("POST", "add_new_user", true);
+  	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  	var str = "csrfmiddlewaretoken="+csrf+"&email="+email+"&first_name="+first_name+"&last_name="+last_name+"&password="+password;
+  	console.log(str)
+  	xmlhttp.send(str);
+}
+</script>
+
+<body>
+	<br><br><br><br>
+	<div class="container" >
+		<div class="row">
+			<div class="col-md-4"></div>
+			<div class="col-md-4">
+				<div class='panel panel-default' style='padding:30px'>
+					<div class='panel-body'>
+						<div class='row'><center><h1>code2do</h1></center></div><br><br>
+						<div class='form-group'>
+							<div class='row'>
+								<div class='col-md-6'>
+								<input type='text' name='first_name' class='form-control' value='{{first_name}}' placeholder="First Name" />
+								</div>
+								<div class='col-md-6'>
+								<input type='text' name='last_name' class='form-control' value='{{last_name}}' placeholder="Last Name" />
+								</div>
+							</div><br>
+							<div class='row'>
+								<input type='text' name='email' class='form-control' value='{{email}}' placeholder="Email" />
+							</div>
+							<div class='row'><br>
+								<input type='password' name='password' class='form-control' placeholder="Password" />
+							</div><br>
+							<div class='row'>
+								<input type='button' class='btn btn-primary form-control' value='Register' onclick='register()'/>
+							</div>
+						</div>
+						<br>
+						<div id="show_errors">
+						</div>
+				
+					</div>
+				</div>
+			</div>
+		</div>
+		<br><br>
+	</div>
+</body>

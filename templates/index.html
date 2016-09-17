@@ -1,0 +1,156 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>code2do</title>
+<meta charset="UTF-8">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<script>
+  // This is called with the results from from FB.getLoginStatus().
+  var csrf = '{{csrf_token}}'
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    if (response.status === 'connected'){
+    	fetch_details();
+    }
+    else {
+	    FB.login(function(response1) {
+	    console.log(response1);
+	    if(response1.authResponse){
+	    		fetch_details();
+	    	}
+	    }, {scope:'email'});
+	}
+  }
+
+  function fetch_details() { 
+    FB.api('/me?fields=email,first_name,last_name', function(response) {
+    	if(checkvalidity(response.email, '', 1)){
+
+    	}
+    	else{
+    		go_to_register(response.email, response.first_name, response.last_name);
+    	}
+    });
+  }
+
+  function go_to_register(email="", first_name="", last_name=""){
+  	document.getElementsByName("email_register")[0].value = email;
+  	document.getElementsByName("first_name_register")[0].value = first_name;
+  	document.getElementsByName("last_name_register")[0].value = last_name;
+  	document.getElementsByName("register_form")[0].submit();
+  }
+
+  function checkvalidity(email, password, fb=0){
+  		var xmlhttp = new XMLHttpRequest();
+  		xmlhttp.onreadystatechange = function(){
+  			if(this.readyState == 4 && this.status == 200){
+  				var response = xmlhttp.response;
+  				if(response == "0")
+  					return false;
+  				else
+  					return true;
+  			}
+  		}
+  		xmlhttp.open("POST", "checkvalidity", true);
+  		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  		var str = "csrfmiddlewaretoken="+csrf+"&email="+email+"&password="+password+"&fb="+fb;
+  		xmlhttp.send(str);
+  }
+
+  function checkLoginState() {
+      FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  function login(){
+  	var email = document.getElementById('email').value;
+  	var password = document.getElementById('password').value;
+  	if(checkvalidity(email, password)){
+  		
+  	}
+  	else{
+  		document.getElementById("show_errors").innerHTML = "<div class='bg-danger' style='padding:10px;'><center>Invalid email or password</center></div>";
+  	}
+  }
+  window.fbAsyncInit = function() {
+	  FB.init({
+	    appId      : '983808021730471',
+	    cookie     : true,  // enable cookies to allow the server to access 
+	                        // the session
+	    xfbml      : true,  // parse social plugins on this page
+	    version    : 'v2.5' // use graph api version 2.5
+	  });
+  };
+
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+</script>
+
+<body>
+	<br><br><br><br>
+	<div class="container" >
+		<div class="row">
+			<div class="col-md-4"></div>
+			<div class="col-md-4">
+				<div class='panel panel-default' style='padding:30px'>
+					<div class='panel-body'>
+						<div class='row'><center><h1>code2do</h1></center></div><br><br>
+						<div class='row'>
+							<div class='form-group'>
+								<input type='text' id='email' class='form-control' placeholder="Email"/>
+							</div>
+							<div class='form-group'>
+								<input type='password' id='password' class='form-control' placeholder="Password" />
+							</div>
+							<div class='from-group'>
+								<button onclick="login()" class='form-control btn btn-primary'>Login</button>
+							</div><br>
+							<div class='from-group' onclick="go_to_register()">
+								<button  class='form-control btn btn-primary'>Register</button>	
+							</div>
+							<br><br>
+					
+						<div class='from-group'>
+								<button class='btn form-control' style='color:white;background-color:#3b5998' onclick="checkLoginState()">
+									<img src="{%static 'fb-logo-white.png'%}" style='height:100%;margin-right:20px'/>
+									Login with facebook
+								</button>
+						</div>
+						<br>
+						<div id="show_errors">
+						</div>
+						</div>
+						<form name="register_form" action="register" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="email_register"/>
+							<input type="hidden" name="first_name_register"/>
+							<input type="hidden" name="last_name_register"/>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br><br>
+	</div>
+</body>
+</html>
