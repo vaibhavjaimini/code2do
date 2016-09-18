@@ -17,6 +17,7 @@
 </head>
 
 <script>
+	
 	var csrf = '{{csrf_token}}';
 	function addproblem(){
 		var url = document.getElementsByName("problem_url")[0].value;
@@ -27,7 +28,7 @@
 				document.getElementsByName("problem_url")[0].value="";
 			}
 		}
-		xmlhttp.open("POST", "addproblem", true);
+		xmlhttp.open("POST", "/addproblem", true);
   		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   		var str = "csrfmiddlewaretoken="+csrf+"&problem_url="+url;
   		console.log(str);
