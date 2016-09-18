@@ -88,15 +88,15 @@ def addproblem(request):
 		problem_url = request.POST["problem_url"]
 		print problem_url + "Here"
 		if "codechef.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
-			site = "codechef"
+			site = "Codechef"
 		elif "hackerearth.com" in problem_url and "/algorithm/" in problem_url:
-			site = "hackerearth"
+			site = "Hackerearth"
 		elif "hackerrank.com" in problem_url and "/challenges/" in problem_url:
-			site = "hackerrank"
+			site = "Hackerrank"
 		elif "codeforces.com" in problem_url and "/problem/" in problem_url:
-			site = "codeforces"
+			site = "Codeforces"
 		elif "spoj.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
-			site = "spoj"
+			site = "Spoj"
 		else:
 			return HttpResponse("Invalid Url")
 		email = request.session["email"]
@@ -108,32 +108,47 @@ def addproblem(request):
 		return HttpResponseRedirect("/")
 
 @csrf_protect
+def marksolved(request):
+	try:
+		user = Users.objects.get(email=request.session["email"])
+		problem = Problems.objects.get(url=request.POST["unsolved_problem_url"], user=user)
+		problem.is_solved=True
+		problem.save()
+		site = request.POST["site"][0].lower()
+		for i in range(1,len(request.POST["site"])):
+			site = site + request.POST["site"][i]
+		print site
+		return HttpResponseRedirect("/profile/"+site)
+	except KeyError:
+		return HttpResponseRedirect("/")
+
+@csrf_protect
 def codechef(request):
 	user = Users.objects.get(email=request.session["email"])
-	problem_list = Problems.objects.filter(site="codechef", user=user)
+	problem_list = Problems.objects.filter(site="Codechef", user=user)
 	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Codechef"})
 
 @csrf_protect
 def codeforces(request):
 	user = Users.objects.get(email=request.session["email"])
-	problem_list = Problems.objects.filter(site="codeforces", user=user)
+	problem_list = Problems.objects.filter(site="Codeforces", user=user)
 	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Codeforces"})
 	
 @csrf_protect
 def hackerearth(request):
 	user = Users.objects.get(email=request.session["email"])
-	problem_list = Problems.objects.filter(site="hackerearth", user=user)
+	problem_list = Problems.objects.filter(site="Hackerearth", user=user)
 	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Hackerearth"})
 	
 @csrf_protect
 def hackerrank(request):
 	user = Users.objects.get(email=request.session["email"])
-	problem_list = Problems.objects.filter(site="hackerrank", user=user)
+	problem_list = Problems.objects.filter(site="Hackerrank", user=user)
 	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Hackerrank"})
 	
 @csrf_protect
 def spoj(request):
 	user = Users.objects.get(email=request.session["email"])
-	problem_list = Problems.objects.filter(site="spoj", user=user)
+	problem_list = Problems.objects.filter(site="Spoj", user=user)
 	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Spoj"})
 	

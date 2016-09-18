@@ -30,5 +30,6 @@ urlpatterns = [
     url(r'^profile/spoj$', views.spoj, name="spoj"),
     url(r'^profile/codeforces$', views.codeforces, name="codeforces"),
     url(r'^profile/hackerrank$', views.hackerrank, name="hackerrank"),
+    url(r'^marksolved$', views.marksolved, name='marksolved'),
     url(r'^admin/', admin.site.urls),
 ]

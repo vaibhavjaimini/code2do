@@ -17,7 +17,7 @@
 </head>
 
 <script>
-	
+
 	var csrf = '{{csrf_token}}';
 	function addproblem(){
 		var url = document.getElementsByName("problem_url")[0].value;
@@ -33,6 +33,10 @@
   		var str = "csrfmiddlewaretoken="+csrf+"&problem_url="+url;
   		console.log(str);
   		xmlhttp.send(str);
+	}
+	function markassolved(problem_url){
+		document.getElementsByName("unsolved_problem_url")[0].value = problem_url;
+		document.getElementsByName("marksolved")[0].submit();
 	}
 </script>
 
@@ -71,11 +75,24 @@
 		</thead>
 		<tbody>
 			{%for problem in problem_list%}
-				<tr><td><center><a target="_blank" href="{{problem.url}}">{{ problem.name }}</a></center></td>
-					<td><center>{{problem.is_solved}}</center></td>
-				</tr>
+				{% if problem.is_solved %}
+					<tr class="success">
+						<td><center><a target="_blank" href="{{problem.url}}">{{ problem.name }}</a></center></td>
+						<td><center><button class="form-control btn btn-success">Solved</button></center></td>
+					</tr>
+				{% else %}
+					<tr>
+						<td><center><a target="_blank" href="{{problem.url}}">{{ problem.name }}</a></center></td>
+						<td><center><button class="form-control btn btn-primary" onclick="markassolved('{{ problem.url }}')">Mark as Solved</button></center></td>
+					</tr>
+				{% endif %}
 			{% endfor %}
 		</tbody>
 		</table>
+		<form action="/marksolved" method="POST" name="marksolved">
+			{% csrf_token %}
+			<input type="hidden" name="unsolved_problem_url"/>
+			<input type="hidden" name="site" value="{{site}}"/>
+		</form>
 	</div>
 </body>
