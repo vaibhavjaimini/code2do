@@ -1,0 +1,93 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>code2do</title>
+<meta charset="UTF-8">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<script>
+	var csrf = '{{csrf_token}}';
+	function addproblem(){
+		var url = document.getElementsByName("problem_url")[0].value;
+		var xmlhttp = new XMLHttpRequest()
+		xmlhttp.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200){
+				alert(xmlhttp.response);
+				document.getElementsByName("problem_url")[0].value="";
+			}
+		}
+		xmlhttp.open("POST", "addproblem", true);
+  		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  		var str = "csrfmiddlewaretoken="+csrf+"&problem_url="+url;
+  		console.log(str);
+  		xmlhttp.send(str);
+	}
+</script>
+
+<body>
+	<nav class="navbar navbar-inverse" style="border-radius:0px">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/profile" style="color:white">code2do</a>
+    </div>
+    
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="/logout" style="color:white"><span class="glyphicon glyphicon-log-in" ></span> Logout</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="container" >
+	<div class="row">
+		<div class="col-md-3"></div>
+		<div class="col-md-5">
+			<input type="text" class="form-control" name="problem_url" placeholder="Add Problem Url" />
+		</div>
+		<div class="col-md-2">
+			<input type="button" onclick="addproblem()" class="btn btn-primary form-control" value="Add Problem" name="problem_url"/>
+		</div>
+	</div>
+	<br><br><br>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-5"><br><br>
+			<a href="profile/hackerearth"><img src="{% static 'HE_logo.png' %}" style="width:300px"/></a>
+		</div>
+		<div class="col-md-1"></div>
+		<div class="col-md-5">
+			<a href="profile/codechef"><img src="{% static 'codechef-logo.png' %}" style="width:300px"/></a>
+		</div>
+	</div>
+	<br><br><br>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-5">
+			<a href="profile/codeforces"><img src="{% static 'cf-logo.png' %}" style="width:300px"/></a>
+		</div>
+		<div class="col-md-1"></div>
+		<div class="col-md-5">
+			<a href="profile/spoj"><img src="{% static 'spoj-logo.png' %}" style="width:300px"/></a>
+		</div>
+	</div>
+	<br><br><br>
+	<div class="row">
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+			<a href="profile/hackerrank"><img src="{% static 'hackerrank-logo.png' %}" style="width:300px"/></a>
+		</div>
+		<div class="col-md-4"></div>
+	</div>
+
+</div>
+
+</body>

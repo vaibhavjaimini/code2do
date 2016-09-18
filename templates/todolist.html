@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>code2do</title>
+<meta charset="UTF-8">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+		<nav class="navbar navbar-inverse" style="border-radius:0px">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/profile" style="color:white">code2do</a>
+    </div>
+    
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="/logout" style="color:white"><span class="glyphicon glyphicon-log-in" ></span> Logout</a></li>
+    </ul>
+  </div>
+</nav>
+	<div class="container">
+		<div class="row">
+			<center>
+			<h1>{{site}} ToDo List:</h1>
+			</center>
+		</div>
+		<table class="table table-hover">
+		<thead>
+			<tr><th><center>Problem Name</center></th>
+			<th><center>Solved</center></th>
+			</tr>
+		</thead>
+		<tbody>
+			{%for problem in problem_list%}
+				<tr><td><center><a target="_blank" href="{{problem.url}}">{{ problem.name }}</a></center></td>
+					<td><center>{{problem.is_solved}}</center></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+		</table>
+	</div>
+</body>

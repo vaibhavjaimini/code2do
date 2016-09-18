@@ -22,22 +22,27 @@ function register(){
 	var email = document.getElementsByName("email")[0].value;
 	var first_name = document.getElementsByName("first_name")[0].value;
 	var last_name = document.getElementsByName("last_name")[0].value;
+	var handle = document.getElementsByName("handle")[0].value;
 	var password = document.getElementsByName("password")[0].value;
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function(){
 		if(this.readyState == 4 && this.status == 200){
 			var response = xmlhttp.response;
 			if(response == "1"){
-				
+				profile(email);
 			}
 		}
 	}
 	xmlhttp.open("POST", "add_new_user", true);
   	xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  	var str = "csrfmiddlewaretoken="+csrf+"&email="+email+"&first_name="+first_name+"&last_name="+last_name+"&password="+password;
-  	console.log(str)
+  	var str = "csrfmiddlewaretoken="+csrf+"&email="+email+"&handle="+handle+"&first_name="+first_name+"&last_name="+last_name+"&password="+password;
   	xmlhttp.send(str);
 }
+  function profile(email){
+  	document.getElementsByName("email_profile")[0].value = email;
+  	document.getElementsByName("profile")[0].submit();
+  }
+
 </script>
 
 <body>
@@ -52,17 +57,20 @@ function register(){
 						<div class='form-group'>
 							<div class='row'>
 								<div class='col-md-6'>
-								<input type='text' name='first_name' class='form-control' value='{{first_name}}' placeholder="First Name" />
+								<input type='text' name='first_name' class='form-control' value='{{first_name}}' placeholder="First Name" required/>
 								</div>
 								<div class='col-md-6'>
-								<input type='text' name='last_name' class='form-control' value='{{last_name}}' placeholder="Last Name" />
+								<input type='text' name='last_name' class='form-control' value='{{last_name}}' placeholder="Last Name" required/>
 								</div>
 							</div><br>
 							<div class='row'>
-								<input type='text' name='email' class='form-control' value='{{email}}' placeholder="Email" />
+								<input type='text' name='email' class='form-control' value='{{email}}' placeholder="Email" required/>
+							</div><br>
+							<div class='row'>
+								<input type='text' class='form-control' value='' name='handle' placeholder="Handle" required/>
 							</div>
 							<div class='row'><br>
-								<input type='password' name='password' class='form-control' placeholder="Password" />
+								<input type='password' name='password' class='form-control' placeholder="Password" required/>
 							</div><br>
 							<div class='row'>
 								<input type='button' class='btn btn-primary form-control' value='Register' onclick='register()'/>
@@ -71,7 +79,10 @@ function register(){
 						<br>
 						<div id="show_errors">
 						</div>
-				
+						<form name="profile" action="profile" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="email_profile"/>
+						</form>
 					</div>
 				</div>
 			</div>

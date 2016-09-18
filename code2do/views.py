@@ -1,13 +1,18 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect	
 from django.views.decorators.csrf import csrf_protect
 from models import Users, Problems
 from django.db import IntegrityError
+import re
 
 @csrf_protect
 def index(request):
-	context = {}
-	return render(request, "index.html", context)
+	try:
+		if request.session["isloggedin"] == True:
+			return HttpResponseRedirect("/profile")
+	except KeyError:
+		context = {}
+		return render(request, "index.html", context)
 
 def hash(password):
 	hash_pass = 0
@@ -22,9 +27,12 @@ def hash(password):
 def checkvalidity(request):
 	valid = 0
 	try:
-		expected_password = Users.objects.get(email=request.POST['email'])
+		user = Users.objects.get(email=request.POST['email'])
+		expected_password = user.password
 		hash_pass = hash(request.POST['password'])
-		if hash_pass == expected_password:
+		if hash_pass == expected_password or request.POST["fb"] == "1":
+			request.session["isloggedin"] = True
+			request.session["email"] = user.email
 			return HttpResponse("1")
 		else:
 			return HttpResponse("0")
@@ -42,11 +50,90 @@ def register(request):
 def add_new_user(request):
 	hash_pass = hash(request.POST['password'])
 	email = request.POST['email']
+	handle = request.POST['handle']
 	first_name = request.POST['first_name']
 	last_name = request.POST['last_name']
 	try:
-		user = Users(email=email, first_name=first_name, last_name=last_name, password=hash_pass)
+		user = Users(email=email, handle=handle, first_name=first_name, last_name=last_name, password=hash_pass)
 		user.save()
+		request.session["isloggedin"] = True
+		request.session["email"] = email
 		return HttpResponse("1")
 	except IntegrityError:
 		return HttpResponse("0")
+
+@csrf_protect
+def profile(request):
+	try:
+		if request.session["isloggedin"] == True:
+			email = request.session["email"]
+			return render(request, "profile.html", {"user_email": email})
+	except KeyError:
+		context = {}
+		return HttpResponseRedirect("/")
+
+@csrf_protect
+def logout(request):
+	try:
+		if request.session["isloggedin"] == True:
+			del request.session["isloggedin"]
+			del request.session["email"]
+		return HttpResponseRedirect("/")
+	except KeyError:
+		return HttpResponseRedirect("/")
+
+@csrf_protect
+def addproblem(request):
+	try:
+		problem_url = request.POST["problem_url"]
+		print problem_url + "Here"
+		if "www.codechef.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
+			site = "codechef"
+		elif "www.hackerearth.com" in problem_url and "/algorithm/" in problem_url:
+			site = "hackerearth"
+		elif "www.hackerrank.com" in problem_url and "/challenges/" in problem_url:
+			site = "hackerrank"
+		elif "www.codeforces.com" in problem_url and "/problem/" in problem_url:
+			site = "codeforces"
+		elif "www.spoj.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
+			site = "spoj"
+		else:
+			return HttpResponse("Invalid Url")
+		email = request.session["email"]
+		user = Users.objects.get(email=email)
+		problem = Problems(user=user, site=site, url=problem_url, name=problem_url)
+		problem.save()
+		return HttpResponse("Problem successfully added to todo list")
+	except KeyError:
+		return HttpResponseRedirect("/")
+
+@csrf_protect
+def codechef(request):
+	user = Users.objects.get(email=request.session["email"])
+	problem_list = Problems.objects.filter(site="codechef", user=user)
+	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Codechef"})
+
+@csrf_protect
+def codeforces(request):
+	user = Users.objects.get(email=request.session["email"])
+	problem_list = Problems.objects.filter(site="codeforces", user=user)
+	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Codeforces"})
+	
+@csrf_protect
+def hackerearth(request):
+	user = Users.objects.get(email=request.session["email"])
+	problem_list = Problems.objects.filter(site="hackerearth", user=user)
+	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Hackerearth"})
+	
+@csrf_protect
+def hackerrank(request):
+	user = Users.objects.get(email=request.session["email"])
+	problem_list = Problems.objects.filter(site="hackerrank", user=user)
+	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Hackerrank"})
+	
+@csrf_protect
+def spoj(request):
+	user = Users.objects.get(email=request.session["email"])
+	problem_list = Problems.objects.filter(site="spoj", user=user)
+	return render(request, "todolist.html", {"problem_list": problem_list, "site":"Spoj"})
+	
