@@ -16,6 +16,25 @@
 
 </head>
 
+<script>
+	var csrf = '{{csrf_token}}';
+	function addproblem(){
+		var url = document.getElementsByName("problem_url")[0].value;
+		var xmlhttp = new XMLHttpRequest()
+		xmlhttp.onreadystatechange = function(){
+			if(this.readyState == 4 && this.status == 200){
+				alert(xmlhttp.response);
+				document.getElementsByName("problem_url")[0].value="";
+			}
+		}
+		xmlhttp.open("POST", "addproblem", true);
+  		xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  		var str = "csrfmiddlewaretoken="+csrf+"&problem_url="+url;
+  		console.log(str);
+  		xmlhttp.send(str);
+	}
+</script>
+
 <body>
 		<nav class="navbar navbar-inverse" style="border-radius:0px">
   <div class="container-fluid">
@@ -29,6 +48,15 @@
   </div>
 </nav>
 	<div class="container">
+		<div class="row">
+		<div class="col-md-3"></div>
+		<div class="col-md-5">
+			<input type="text" class="form-control" name="problem_url" placeholder="Add Problem Url" />
+		</div>
+		<div class="col-md-2">
+			<input type="button" onclick="addproblem()" class="btn btn-primary form-control" value="Add Problem" name="problem_url"/>
+		</div>
+	</div><br>
 		<div class="row">
 			<center>
 			<h1>{{site}} ToDo List:</h1>

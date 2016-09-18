@@ -87,15 +87,15 @@ def addproblem(request):
 	try:
 		problem_url = request.POST["problem_url"]
 		print problem_url + "Here"
-		if "www.codechef.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
+		if "codechef.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
 			site = "codechef"
-		elif "www.hackerearth.com" in problem_url and "/algorithm/" in problem_url:
+		elif "hackerearth.com" in problem_url and "/algorithm/" in problem_url:
 			site = "hackerearth"
-		elif "www.hackerrank.com" in problem_url and "/challenges/" in problem_url:
+		elif "hackerrank.com" in problem_url and "/challenges/" in problem_url:
 			site = "hackerrank"
-		elif "www.codeforces.com" in problem_url and "/problem/" in problem_url:
+		elif "codeforces.com" in problem_url and "/problem/" in problem_url:
 			site = "codeforces"
-		elif "www.spoj.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
+		elif "spoj.com" in problem_url and re.search("problems/[A-Z0-9]", problem_url):
 			site = "spoj"
 		else:
 			return HttpResponse("Invalid Url")
